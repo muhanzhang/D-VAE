@@ -737,7 +737,7 @@ for epoch in range(start_epoch + 1, args.epochs + 1):
         print("sample from prior...")
         sampled = model.generate_sample(args.sample_number)
         for i, g in enumerate(sampled):
-            namei = 'graph_{}_sample{}.pdf'.format(epoch, i)
+            namei = 'graph_{}_sample{}'.format(epoch, i)
             plot_DAG(g, args.res_dir, namei, data_type=args.data_type)
         print("plot train loss...")
         losses = np.loadtxt(loss_name)
