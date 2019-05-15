@@ -69,7 +69,7 @@ Install R package _bnlearn_:
 
 Then, in "bayesian_optimization/", type:
 
-    ./run_bo_NN.sh
+    ./run_bo_ENAS.sh
 
 and 
 
