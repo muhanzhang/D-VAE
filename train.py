@@ -146,12 +146,6 @@ if args.no_test:
 
 if args.small_train:
     train_data = train_data[:40]
-#train_data = [train_data[6]]
-#test_data = train_data
-#train_data = train_data[:40]
-#train_data = train_data[2:4]
-#test_data = train_data
-
 
 
 '''Prepare the model'''
@@ -206,15 +200,6 @@ if not os.path.exists(os.path.join(args.res_dir, 'train_graph_id0.pdf')) or args
             for i, g in enumerate(G):
                 name = '{}_graph_id{}'.format(data[:-5], i)
                 plot_DAG(g, args.res_dir, name, data_type=args.data_type)
-
-            '''
-            for i, (g, y) in enumerate(eval(data)):
-                if args.model.startswith('SVAE'):
-                    g = model.construct_igraph(g[:, :, :model.nvt], g[:, :, model.nvt:], False)[0]
-                if i < 10:
-                    name = '{}_graph_id{}'.format(data[:-5], i)
-                    plot_DAG(g, args.res_dir, name, data_type=args.data_type)
-            '''
 
 
 '''Define some train/test functions'''
@@ -277,24 +262,6 @@ def train(epoch):
 def visualize_recon(epoch):
     model.eval()
     # draw some reconstructed train/test graphs to visualize recon quality
-    '''
-    G = [g for (g, y) in test_data[:10]+train_data[:10]]
-    if args.model.startswith('SVAE'):
-        G = [g.to(device) for g in G]
-        G = model._collate_fn(G)
-        G_recon = model.encode_decode(G)
-        G = model.construct_igraph(G[:, :, :model.nvt], G[:, :, model.nvt:], False)
-    elif args.model.startswith('DVAE'):
-        G = model._collate_fn(G)
-        G_recon = model.encode_decode(G)
-    for i, g in enumerate(G):
-        g_recon = G_recon[i]
-        name0 = 'graph_epoch{}_id{}_original'.format(epoch, i)
-        plot_DAG(g, args.res_dir, name0, data_type=args.data_type)
-        name1 = 'graph_epoch{}_id{}_recon'.format(epoch, i)
-        plot_DAG(g_recon, args.res_dir, name1, data_type=args.data_type)
-
-    '''
     for i, (g, y) in enumerate(test_data[:10]+train_data[:10]):
         if args.model.startswith('SVAE'):
             g = g.to(device)
