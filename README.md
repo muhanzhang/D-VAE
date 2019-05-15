@@ -49,10 +49,13 @@ Install sparse Gaussian Process (SGP) based on Theano:
 
     cd bayesian_optimization/Theano-master/
     python setup.py install
+    cd ../..
 
 Download the [CIFAR10 dataset](https://www.cs.toronto.edu/~kriz/cifar.html) by: 
 
-    cd software/enas/data/"
+    cd software/enas
+    mkdir data
+    cd data
     wget https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz
     tar -xzvf cifar-10-python.tar.gz
     mv cifar-10-batches-py/ cifar10/
@@ -62,7 +65,7 @@ Install [TensorFlow](https://www.tensorflow.org/install/gpu) >= 1.12.0
 Install R package _bnlearn_:
 
     R
-    install.packages('bnlearn', lib='/R/library')
+    install.packages('bnlearn', lib='/R/library', repos='http://cran.us.r-project.org')
 
 Then, in "bayesian_optimization/", type:
 
