@@ -59,6 +59,13 @@ Download the [CIFAR10 dataset](https://www.cs.toronto.edu/~kriz/cifar.html) by:
     wget https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz
     tar -xzvf cifar-10-python.tar.gz
     mv cifar-10-batches-py/ cifar10/
+    cd ../..
+
+Download the pretrained ENAS model (for evaluating a neural architecture's weight-sharing accuracy):
+
+    cd software/enas
+    wget https://www.dropbox.com/sh/h5q9g784uf41xhi/AADZaGvYqHucoQ373U17J_pPa?dl=0
+    cd ../..
 
 Install [TensorFlow](https://www.tensorflow.org/install/gpu) >= 1.12.0
 
