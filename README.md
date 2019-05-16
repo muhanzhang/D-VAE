@@ -34,7 +34,7 @@ Training
 
 ### Neural Architectures
 
-    python train.py --data-name final_structures6 --save-interval 100 --save-appendix _DVAE --epochs 300 --lr 1e-4 --model DVAE --nz 56 --batch-size 32
+    python train.py --data-name final_structures6 --save-interval 100 --save-appendix _DVAE --epochs 300 --lr 1e-4 --model DVAE --bidirectional --nz 56 --batch-size 32
 
 ### Bayesian Networks
 
