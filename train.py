@@ -584,7 +584,7 @@ def interpolation_exp3(epoch):
 
 
 def smoothness_exp(epoch, gap=0.05):
-    print('Smoothness experiments around zero latent vector')
+    print('Smoothness experiments around a latent vector')
     smoothness_res_dir = os.path.join(args.res_dir, 'smoothness')
     if not os.path.exists(smoothness_res_dir):
         os.makedirs(smoothness_res_dir) 
@@ -592,7 +592,7 @@ def smoothness_exp(epoch, gap=0.05):
     #z0 = torch.zeros(1, model.nz).to(device)  # use all-zero vector as center
     
     if args.data_type == 'ENAS': 
-        g_str = '4 4 0 3 0 0 5 0 0 1 2 0 0 0 0 5 0 0 0 1 0'  # the best found by SVAE BO
+        g_str = '4 4 0 3 0 0 5 0 0 1 2 0 0 0 0 5 0 0 0 1 0'
         row = [int(x) for x in g_str.split()]
         row = flat_ENAS_to_nested(row, model.max_n-2)
         if args.model.startswith('SVAE'):
@@ -616,6 +616,7 @@ def smoothness_exp(epoch, gap=0.05):
 
     # generate architectures along two orthogonal directions
     grid_size = 13
+    grid_size = 9
     mid = grid_size // 2
     Z = []
     pbar = tqdm(range(grid_size ** 2))
@@ -640,15 +641,22 @@ def smoothness_exp(epoch, gap=0.05):
         nameij = 'graph_smoothness{}_{}'.format(i, j)
         nameij = plot_DAG(G[idx], smoothness_res_dir, nameij, data_type=args.data_type)
         names.append(nameij)
-    fig = plt.figure(figsize=(200, 200))
+    #fig = plt.figure(figsize=(200, 200))
+    if args.data_type == 'ENAS':
+        fig = plt.figure(figsize=(50, 50))
+    elif args.data_type == 'BN':
+        fig = plt.figure(figsize=(30, 30))
+    
     nrow, ncol = grid_size, grid_size
     for ij, nameij in enumerate(names):
         imgij = mpimg.imread(nameij)
         fig.add_subplot(nrow, ncol, ij + 1)
         plt.imshow(imgij)
         plt.axis('off')
+    plt.rcParams["axes.edgecolor"] = "black"
+    plt.rcParams["axes.linewidth"] = 1
     plt.savefig(os.path.join(args.res_dir, 
-                args.data_name + '_{}_smoothness_ensemble_epoch{}_gap={}.pdf'.format(
+                args.data_name + '_{}_smoothness_ensemble_epoch{}_gap={}_small.pdf'.format(
                 args.model, epoch, gap)), bbox_inches='tight')
 
 
@@ -666,7 +674,7 @@ if args.only_test:
     #save_latent_representations(epoch)
     #visualize_recon(300)
     #interpolation_exp2(epoch)
-    interpolation_exp3(epoch)
+    #interpolation_exp3(epoch)
     #prior_validity(True)
     #test()
     #smoothness_exp(epoch, 0.1)
