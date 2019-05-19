@@ -37,7 +37,7 @@ if data_type == 'ENAS':
     save_appendix = ['DVAE']
     model_name = ['D-VAE']
     
-    res_dir = 'NN_results/'
+    res_dir = 'ENAS_results/'
     n_iter = 10
     num_random_seeds = 10
     
