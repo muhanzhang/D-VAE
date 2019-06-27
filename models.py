@@ -873,18 +873,32 @@ class DVAE(nn.Module):
     The message passing happens at all nodes simultaneously.
 '''
 class DVAE_GCN(DVAE):
-    def __init__(self, max_n, nvt, START_TYPE, END_TYPE, hs=501, nz=56, bidirectional=False):
+    def __init__(self, max_n, nvt, START_TYPE, END_TYPE, hs=501, nz=56, bidirectional=False, levels=1):
         # bidirectional means passing messages ignoring edge directions
         super(DVAE_GCN, self).__init__(max_n, nvt, START_TYPE, END_TYPE, hs, nz, bidirectional)
-        self.gconv = nn.Sequential(
-                nn.Linear(nvt, hs), 
-                nn.ReLU(), 
+        self.levels = levels
+        self.gconv = nn.ModuleList()
+        self.gconv.append(
+                nn.Sequential(
+                    nn.Linear(nvt, hs), 
+                    nn.ReLU(), 
+                    )
                 )
+        for lv in range(1, levels):
+            self.gconv.append(
+                    nn.Sequential(
+                        nn.Linear(hs, hs), 
+                        nn.ReLU(), 
+                        )
+                    )
 
-    def _get_feature(self, g, v):
+    def _get_feature(self, g, v, lv=0):
         # get the node feature vector of v
-        v_type = g.vs[v]['type']
-        x = self._one_hot(v_type, self.nvt)
+        if lv == 0:  # initial level uses type features
+            v_type = g.vs[v]['type']
+            x = self._one_hot(v_type, self.nvt)
+        else:
+            x = g.vs[v]['H_forward']
         return x
 
     def _get_zero_x(self, n=1):
@@ -908,7 +922,7 @@ class DVAE_GCN(DVAE):
         Hg = torch.cat(Hg, 0).sum(1)  # batch * hs
         return Hg  # batch * hs
 
-    def _GCN_propagate_to(self, G, v):
+    def _GCN_propagate_to(self, G, v, lv=0):
         # propagate messages to vertex index v for all graphs in G
         # return the new messages (states) at v
         G = [g for g in G if g.vcount() > v]
@@ -916,32 +930,34 @@ class DVAE_GCN(DVAE):
             return
 
         if self.bidir:  # ignore edge directions, accept all neighbors' messages
-            H_nei = [[self._get_feature(g, v)/g.degree(v)] + 
-                     [self._get_feature(g, x)/math.sqrt(g.degree(x)*g.degree(v)) for x in g.neighbors(v)] 
-                     for g in G]
-        else:  # only accept messages from predecessors
-            H_nei = [[self._get_feature(g, v)/g.indegree(v)] + 
-                     [self._get_feature(g, x)/math.sqrt(g.outdegree(x)*g.indegree(v)) 
+            H_nei = [[self._get_feature(g, v, lv)/(g.degree(v)+1)] + 
+                     [self._get_feature(g, x, lv)/math.sqrt((g.degree(x)+1)*(g.degree(v)+1)) 
+                     for x in g.neighbors(v)] for g in G]
+        else:  # only accept messages from predecessors (generalizing GCN to directed cases)
+            H_nei = [[self._get_feature(g, v, lv)/(g.indegree(v)+1)] + 
+                     [self._get_feature(g, x, lv)/math.sqrt((g.outdegree(x)+1)*(g.indegree(v)+1)) 
                      for x in g.predecessors(v)] for g in G]
             
         max_n_nei = max([len(x) for x in H_nei])  # maximum number of neighbors
-        H_nei = [torch.cat(h_nei + [self._get_zero_x((max_n_nei - len(h_nei)))], 0).unsqueeze(0) 
+        H_nei = [torch.cat(h_nei + [self._get_zeros(max_n_nei - len(h_nei), h_nei[0].shape[1])], 0).unsqueeze(0) 
                  for h_nei in H_nei]  # pad all to same length
         H_nei = torch.cat(H_nei, 0)  # batch * max_n_nei * nvt
-        Hv = self.gconv(H_nei.sum(1))  # batch * hs
+        Hv = self.gconv[lv](H_nei.sum(1))  # batch * hs
         for i, g in enumerate(G):
             g.vs[v]['H_forward'] = Hv[i:i+1]
         return Hv
 
     def encode(self, G):
         # encode graphs G into latent vectors
+        # GCN propagation is now implemented in a non-parallel way for consistency, but
+        # can definitely be parallel to speed it up. However, the major computation cost
+        # comes from the generation, which is not parallellizable.
         if type(G) != list:
             G = [G]
         prop_order = range(self.max_n)
-        if self.bidir:
-            self._GCN_propagate_to(G, 0)  # start type, when not bidir, can't propagate to
-        for v_ in prop_order[1:]:
-            self._GCN_propagate_to(G, v_)
+        for lv in range(self.levels):
+            for v_ in prop_order:
+                self._GCN_propagate_to(G, v_, lv)
         Hg = self._get_graph_state(G, start=1, end_offset=1)  # does not use the dummy input 
                                                               # and output nodes
         mu, logvar = self.fc1(Hg), self.fc2(Hg) 
