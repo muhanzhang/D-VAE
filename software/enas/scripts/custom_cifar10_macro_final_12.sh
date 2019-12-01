@@ -13,7 +13,7 @@ python src/cifar10/main.py \
   --search_for="macro" \
   --reset_output_dir \
   --data_path="data/cifar10" \
-  --output_dir="outputs${output_appendix}" \
+  --output_dir="outputs_${output_appendix}" \
   --batch_size=100 \
   --num_epochs=310 \
   --log_every=50 \
@@ -21,6 +21,7 @@ python src/cifar10/main.py \
   --child_fixed_arc="${fixed_arc}" \
   --child_use_aux_heads \
   --child_num_layers=12 \
+  --structure_path="sample_structures12.txt"
   --child_out_filters=${filters} \
   --child_l2_reg=2e-4 \
   --child_num_branches=6 \

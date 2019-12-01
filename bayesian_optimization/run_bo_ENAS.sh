@@ -15,3 +15,6 @@ python bo.py \
   #--save-appendix SVAE \
   #--save-appendix GraphRNN \
   #--save-appendix GCN \
+  #--save-appendix DeepGMG \
+  #--save-appendix DVAE_fast \
+

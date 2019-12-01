@@ -131,7 +131,7 @@ class GeneralController(Controller):
   def _load_sampler(self):
     if not self.structure_path:
       print("Loading the default file")
-      with open('/project/tantra/mh/GraphAutoEncoder/bayesian_optimization/sample_structures6.txt', 'r') as fp:
+      with open('../../../../bayesian_optimization/sample_structures6.txt', 'r') as fp:
         lines = fp.readlines()
     else:
       with open(self.structure_path, 'r') as fp:

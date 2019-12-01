@@ -1,9 +1,8 @@
 ##
 # This class represents a node within the network
 #
-
 from __future__ import print_function
-
+import pdb
 import theano
 import theano.tensor as T
 

@@ -28,13 +28,17 @@ predictivity results.
 
 # Change experiment settings here
 
-#data_type = 'BN'
+data_type = 'BN'
 data_type = 'ENAS'
 if data_type == 'ENAS':
     max_n = 8  # number of nodes
-    #save_appendix = ['DVAE', 'SVAE', 'GraphRNN', 'GCN', 'DeepGMG']
-    #model_name = ['D-VAE', 'S-VAE', 'GraphRNN', 'GCN', 'DeepGMG']
+    #save_appendix = ['DVAE', 'SVAE', 'GraphRNN', 'GCN']
+    #model_name = ['D-VAE', 'S-VAE', 'GraphRNN', 'GCN']
     save_appendix = ['DVAE']
+    model_name = ['D-VAE']
+    save_appendix = ['DVAE_GCN56_lv3']
+    model_name = ['GCN']
+    save_appendix = ['DVAE_fast']
     model_name = ['D-VAE']
     
     res_dir = 'ENAS_results/'
@@ -47,10 +51,12 @@ if data_type == 'ENAS':
 
 elif data_type == 'BN':
     max_n = 10  # number of nodes
-    #save_appendix = ['DVAE', 'SVAE', 'GraphRNN', 'GCN', 'DeepGMG']
-    #model_name = ['D-VAE', 'S-VAE', 'GraphRNN', 'GCN', 'DeepGMG']
+    #save_appendix = ['DVAE', 'SVAE', 'GraphRNN', 'GCN']
+    #model_name = ['D-VAE', 'S-VAE', 'GraphRNN', 'GCN']
     save_appendix = ['DVAE']
     model_name = ['D-VAE']
+    save_appendix = ['DVAE_GCN56_lv2']
+    model_name = ['GCN']
     
 
     res_dir = 'BN_results/'
@@ -63,6 +69,8 @@ elif data_type == 'BN':
 
 
 aggregate_dir = '{}_aggregate_results/'.format(data_type)
+
+aggregate_dir = 'tmp_aggregate_results/'.format(data_type)
 
 if not os.path.exists(aggregate_dir):
     os.makedirs(aggregate_dir) 
@@ -94,6 +102,7 @@ for random_seed in range(1, num_random_seeds+1):
     Scores = [[] for _ in model_name]
     Arcs = [[] for _ in model_name]
     Random_scores = [[] for _ in model_name]
+    '''
     pbar = tqdm(range(n_iter))
     for iteration in pbar:
         for i, x in enumerate(save_dir):
@@ -110,6 +119,7 @@ for random_seed in range(1, num_random_seeds+1):
             train_arcs = load_object("{}valid_arcs_final-1.dat".format(x))
             Train_scores[i].append(train_scores)
             Train_arcs[i].append(train_arcs)
+    '''
 
     test_rmse, test_r = [[] for _ in model_name], [[] for _ in model_name]
     for i in range(len(model_name)):
@@ -143,6 +153,11 @@ for i in range(len(model_name)):
     all_test_rmse[i] = np.array(all_test_rmse[i])
     all_test_r[i] = np.array(all_test_r[i])
 
+print(np.mean(all_test_rmse))
+print(np.std(all_test_rmse))
+print(np.mean(all_test_r))
+print(np.std(all_test_r))
+pdb.set_trace()
 
 # plot average scores
 fig = plt.figure()
@@ -195,8 +210,6 @@ def get_highest_over_time(scores):
             cm, cs = highest_so_far[-1], std_so_far[-1]
         highest_so_far.append(cm)
         std_so_far.append(cs)
-    return (highest_so_far, std_so_far)
-
 fig = plt.figure()
 for i in range(len(model_name)):
     plt.errorbar(range(1, n_iter+1), *get_highest_over_time(-All_Scores[i]), label=model_name[i] + '+BO')

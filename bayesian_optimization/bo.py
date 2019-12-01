@@ -148,6 +148,8 @@ for rand_idx in range(1,11):
     copy('bo.py', save_dir)
     if args.predictor:
         copy('run_pred_{}.sh'.format(data_type), save_dir)
+    elif args.vis_2d:
+        copy('run_vis_{}.sh'.format(data_type), save_dir)
     else:
         copy('run_bo_{}.sh'.format(data_type), save_dir)
 
@@ -285,7 +287,7 @@ for rand_idx in range(1,11):
         z0 = torch.zeros(1, args.nz).cuda()
         z0 = z0.detach()
         max_xy = 0.3
-        #max_xy = 0.005
+        #max_xy = 0.6
         x_range = np.arange(-max_xy, max_xy, 0.005)
         y_range = np.arange(max_xy, -max_xy, -0.005)
         n = len(x_range)
@@ -344,9 +346,9 @@ for rand_idx in range(1,11):
 
     '''Bayesian optimiation begins here'''
     iteration = 0
-    best_score = 1e8
+    best_score = 1e15
     best_arc = None
-    best_random_score = 1e8
+    best_random_score = 1e15
     best_random_arc = None
     print("Average pairwise distance between train points = {}".format(np.mean(pdist(X_train))))
     print("Average pairwise distance between test points = {}".format(np.mean(pdist(X_test))))
@@ -381,7 +383,6 @@ for rand_idx in range(1,11):
         print('Pearson r: ', pearson)
         with open(save_dir + 'Test_RMSE_ll.txt', 'a') as test_file:
             test_file.write('Test RMSE: {:.4f}, ll: {:.4f}, Pearson r: {:.4f}\n'.format(error, testll, pearson))
-
 
         error_if_predict_mean = np.sqrt(np.mean((np.mean(y_train, 0) - y_test)**2))
         print('Test RMSE if predict mean: ', error_if_predict_mean)
@@ -528,7 +529,7 @@ for rand_idx in range(1,11):
                 g_best, _ = decode_BN_to_igraph(row)
             plot_DAG(g_best, save_dir, 'best_arc_iter_{}'.format(iteration), data_type=data_type, pdf=True)
 
-            iteration += 1
-            print(iteration)
+        iteration += 1
+        print(iteration)
 
 pdb.set_trace()

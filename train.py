@@ -134,18 +134,19 @@ if not args.keep_old:
     copy('train.py', args.res_dir)
     copy('models.py', args.res_dir)
     copy('util.py', args.res_dir)
-    # save command line input
-    cmd_input = 'python ' + ' '.join(sys.argv)
-    with open(os.path.join(args.res_dir, 'cmd_input.txt'), 'w') as f:
-        f.write(cmd_input)
-    print('Command line input: ' + cmd_input + ' is saved.')
+
+# save command line input
+cmd_input = 'python ' + ' '.join(sys.argv) + '\n'
+with open(os.path.join(args.res_dir, 'cmd_input.txt'), 'a') as f:
+    f.write(cmd_input)
+print('Command line input: ' + cmd_input + ' is saved.')
 
 # construct train data
 if args.no_test:
     train_data = train_data + test_data
 
 if args.small_train:
-    train_data = train_data[:40]
+    train_data = train_data[:100]
 
 
 '''Prepare the model'''
@@ -265,6 +266,7 @@ def visualize_recon(epoch):
     for i, (g, y) in enumerate(test_data[:10]+train_data[:10]):
         if args.model.startswith('SVAE'):
             g = g.to(device)
+            g = model._collate_fn(g)
             g_recon = model.encode_decode(g)[0]
             g = model.construct_igraph(g[:, :, :model.nvt], g[:, :, model.nvt:], False)[0]
         elif args.model.startswith('DVAE'):
@@ -309,7 +311,7 @@ def test():
             for _ in range(encode_times):
                 z = model.reparameterize(mu, logvar)
                 for _ in range(decode_times):
-                    g_recon = model.decode(mu)
+                    g_recon = model.decode(z)
                     n_perfect += sum(is_same_DAG(g0, g1) for g0, g1 in zip(g, g_recon))
             g_batch = []
             y_batch = []
@@ -592,7 +594,7 @@ def smoothness_exp(epoch, gap=0.05):
     #z0 = torch.zeros(1, model.nz).to(device)  # use all-zero vector as center
     
     if args.data_type == 'ENAS': 
-        g_str = '4 4 0 3 0 0 5 0 0 1 2 0 0 0 0 5 0 0 0 1 0'
+        g_str = '4 4 0 3 0 0 5 0 0 1 2 0 0 0 0 5 0 0 0 1 0'  # a 6-layer network
         row = [int(x) for x in g_str.split()]
         row = flat_ENAS_to_nested(row, model.max_n-2)
         if args.model.startswith('SVAE'):
@@ -671,14 +673,15 @@ if os.path.exists(loss_name) and not args.keep_old:
 
 if args.only_test:
     epoch = args.continue_from
+    #sampled = model.generate_sample(args.sample_number)
     #save_latent_representations(epoch)
-    #visualize_recon(300)
+    visualize_recon(300)
     #interpolation_exp2(epoch)
     #interpolation_exp3(epoch)
     #prior_validity(True)
     #test()
     #smoothness_exp(epoch, 0.1)
-    smoothness_exp(epoch, 0.05)
+    #smoothness_exp(epoch, 0.05)
     #interpolation_exp(epoch)
     pdb.set_trace()
 

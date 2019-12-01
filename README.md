@@ -4,12 +4,12 @@ D-VAE -- A Variational Autoencoder for Directed Acyclic Graphs
 About
 -----
 
-Directed acyclic graphs (DAGs) are of particular interest to machine learning researchers, as many machine learning models are realized as computations on DAGs, including neural networks and Bayesian networks. Two important problems, neural architecture search (NAS) and Bayesian network structure learning (BNSL), are essentially DAG optimization problems, where an optimal DAG structure is to be found to best fit the given dataset.
+Directed acyclic graphs (DAGs) are of particular interest to machine learning researchers, as many machine learning models are realized as computations on DAGs, including neural networks and Bayesian networks. Two important problems, neural architecture search (NAS) and Bayesian network structure learning (BNSL), are essentially DAG optimization problems, where an optimal DAG structure is to be found to best fit a given dataset.
 
-D-VAE is a variational autoencoder for DAGs. It encodes/decodes DAGs using an asynchronous message passing scheme, and is able to injectively encode computations on DAGs. D-VAE provides a new direction for DAG optimization. By embedding DAGs into a continuous latent space, D-VAE transforms the difficult discrete optimization problem into an easier continuous space optimization problem, where principled Bayesian optimization can be performed in this latent space to optimize DAG structures.
+D-VAE is a variational autoencoder for DAGs. It encodes/decodes DAGs using an asynchronous message passing scheme where a node updates its state only after all its predecessors' have been updated. The final node's state can injectively encode the computation on a DAG, rather than only encoding local structures as in standard simultaneous message passing. After training on some DAG distribution, D-VAE can not only generate novel and valid DAGs, but also be used to optimize DAG structures in its latent space. By embedding DAGs into a continuous latent space, D-VAE transforms the difficult discrete optimization problem into an easier continuous space optimization problem, where principled Bayesian optimization can be performed in this latent space to optimize DAG structures. Thanks to the computation-encoding property, D-VAE also empirically embeds DAGs with similar computation purposes (and performances) into the same region, which greatly facilitates the Bayesian optimization.
 
 For more information, please check our paper:
-> M. Zhang, S. Jiang, Z. Cui, R. Garnett, Y. Chen, D-VAE: A Variational Autoencoder for Directed Acyclic Graphs. [\[Preprint\]](https://arxiv.org/pdf/1904.11088.pdf)
+> M. Zhang, S. Jiang, Z. Cui, R. Garnett, Y. Chen, D-VAE: A Variational Autoencoder for Directed Acyclic Graphs, Advances in Neural Information Processing Systems (NeurIPS-19). [\[PDF\]](https://arxiv.org/pdf/1904.11088.pdf)
 
 Installation
 ------------
@@ -94,7 +94,8 @@ If you find the code useful, please cite our paper.
     @article{zhang2019d,
       title={D-VAE: A Variational Autoencoder for Directed Acyclic Graphs},
       author={Zhang, Muhan and Jiang, Shali and Cui, Zhicheng and Garnett, Roman and Chen, Yixin},
-      journal={arXiv preprint arXiv:1904.11088},
+      booktitle={Advances in Neural Information Processing Systems},
+      pages={1586--1598},
       year={2019}
     } 
 
