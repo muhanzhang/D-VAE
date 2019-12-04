@@ -747,6 +747,5 @@ with open(test_results_name, 'a') as result_file:
 interpolation_exp2(epoch)
 smoothness_exp(epoch)
 interpolation_exp3(epoch)
-interpolation_exp(epoch)
 
 pdb.set_trace()

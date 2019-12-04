@@ -153,7 +153,8 @@ def flat_ENAS_to_nested(row, n_nodes):
     for i in range(1, n_nodes+1):
         res.append(row[cnt:cnt+i])
         cnt += i
-    assert(cnt == len(row))
+        if cnt == len(row):
+            break
     return res
 
 
