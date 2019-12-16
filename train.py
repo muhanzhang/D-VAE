@@ -16,6 +16,8 @@ import scipy.io
 from scipy.linalg import qr 
 import igraph
 from random import shuffle
+import matplotlib
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from util import *
