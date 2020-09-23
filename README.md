@@ -61,7 +61,7 @@ Download the [CIFAR10 dataset](https://www.cs.toronto.edu/~kriz/cifar.html) by:
     mv cifar-10-batches-py/ cifar10/
     cd ../..
 
-Download the [pretrained ENAS model](https://www.dropbox.com/sh/h5q9g784uf41xhi/AADZaGvYqHucoQ373U17J_pPa?dl=0) to "software/enas/" (for evaluating a neural architecture's weight-sharing accuracy). There should be a folder named "software/enas/outputs_6/", which contains four model files.
+Download the 6-layer [pretrained ENAS model](https://drive.google.com/drive/folders/1e-mYRZS_10Aegj8Sczcb948RbHyiju1S?usp=sharing) to "software/enas/" (for evaluating a neural architecture's weight-sharing accuracy). There should be a folder named "software/enas/outputs_6/", which contains four model files. The 12-layer pretrained ENAS model is available [here](https://drive.google.com/drive/folders/18GU9g5DNiHn2MOVKOiF1fCwNQMTA-mnH?usp=sharing) too.
 
 Install [TensorFlow](https://www.tensorflow.org/install/gpu) >= 1.12.0
 
